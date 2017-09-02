@@ -6,42 +6,34 @@ Created on Sun Aug 27 12:38:53 2017
 @author: vicenterotman
 """
 from matplotlib import pyplot as plt
-import numpy
-from PIL import Image
+import numpy as np
+import csv
+import re
 
 def displayDigit(image):
-    npimage = numpy.array(image)
-
-    #plt.imshow(npimage, cmap='gray', interpolation='nearest');
-    #pixels = npimage.image.reshape((28,28))
-    #plt.imshow(pixels, cmap='gray')
+    print_image = np.reshape(image,(28,28))
+    plt.imshow(print_image,cmap = 'gray_r')
     return
 
-def convertToImage(array):
-    image = []
-    current=[]
-    count = 0
-    for i in array:
-        if(count < 28):
-            current.append(i)
-        if(count == 27):
-            image.append(current)
-            current = []
-            count = -1
-        count+=1
-        
-    return image
-
-imageNumber = 0
-for line in open("data/train.csv"):    
-    if imageNumber == 0:
-        imageNumber=+1
-        continue
+def main():
+    with open("data/train.csv") as file_object:
+        lines = file_object.readlines()
+        print(len(lines))
     
-    array = line.strip('\n\r').split(',')
-    array = [ int(x) for x in array ]
-    array.pop(0)
-    image = convertToImage(array)
-    displayDigit(array)
+    total_images_count = len(lines)-1
+    test_data = np.zeros([total_images_count,784])
+    labels_test_data = []
+    i = 0
     
-    break
+    for line in lines:
+        sample = line.split(',')
+        if i > 0 & i < total_images_count:
+            labels_test_data.append(sample[0])
+            j = 0
+            for j in range(783):
+                test_data[i-1,j] =  int(sample [j+1])
+        i = i+1
+    
+    displayDigit(test_data[1,:])
+    
+main()
